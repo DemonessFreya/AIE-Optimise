@@ -24,6 +24,7 @@
 #include <random>
 #include <time.h>
 #include "Critter.h"
+#include "TextureManager.h"
 
 int main(int argc, char* argv[])
 {
@@ -38,6 +39,10 @@ int main(int argc, char* argv[])
     //--------------------------------------------------------------------------------------
 
     srand(time(NULL));
+
+    TextureManager texManager;
+    Texture2D critterTex = texManager.GetTexture("res/10.png");
+    Texture2D destroyerTex = texManager.GetTexture("res/9.png");
 
 
     Critter critters[1000]; 
@@ -54,17 +59,14 @@ int main(int argc, char* argv[])
         velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
         // create a critter in a random location
-        critters[i].Init(
-            { (float)(5+rand() % (screenWidth-10)), (float)(5+(rand() % screenHeight-10)) },
-            velocity,
-            12, "res/10.png");
+        critters[i].Init({ (float)(5+rand() % (screenWidth-10)), (float)(5+(rand() % screenHeight-10)) }, velocity, 12, critterTex);
     }
 
 
     Critter destroyer;
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
-    destroyer.Init(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, "res/9.png");
+    destroyer.Init(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, destroyerTex);
 
     float timer = 1;
     Vector2 nextSpawnPos = destroyer.GetPosition();
@@ -178,8 +180,8 @@ int main(int argc, char* argv[])
                     // get a position behind the destroyer, and far enough away that the critter won't bump into it again
                     Vector2 pos = destroyer.GetPosition();
                     pos = Vector2Add(pos, Vector2Scale(normal, -50));
-                    // its pretty ineficient to keep reloading textures. ...if only there was something else we could do
-                    critters[i].Init(pos, Vector2Scale(normal, -MAX_VELOCITY), 12, "res/10.png");
+                    // its pretty ineficient to keep reloading textures. ...if only there was something else we could do || yeah yeah i got it
+                    critters[i].Init(pos, Vector2Scale(normal, -MAX_VELOCITY), 12, critterTex);
                     break;
                 }
             }
