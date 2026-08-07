@@ -18,6 +18,9 @@ void GameObject::Update(float delta) {}
 
 void GameObject::Draw() {
 	if (m_texture != nullptr) {
-		DrawTexture(*m_texture, m_bounds.m_centre.x, m_bounds.m_centre.y, WHITE);
+		DrawTexture(*m_texture,
+			m_bounds.m_centre.x - m_bounds.m_halfSize.x,
+			m_bounds.m_centre.y - m_bounds.m_halfSize.y,
+			WHITE);
 	}
 }

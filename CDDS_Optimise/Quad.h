@@ -1,7 +1,9 @@
 #pragma once
 
 #include "raymath.h"
+#include <vector>
 
+class GameObject;
 
 class AABB
 {
@@ -33,5 +35,35 @@ public:
     }
     Vector2 m_centre;
     Vector2 m_halfSize;
+};
+
+class Quadtree
+{
+public:
+    static const int m_capacity = 2;
+
+    enum SUBTREE {
+        TOP_LEFT = 0,
+        TOP_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT
+    };
+
+public:
+    Quadtree();
+    Quadtree(AABB boundary);
+    ~Quadtree();
+
+    bool Insert(GameObject*);
+    void Subdivide();
+
+    void Update(float delta);
+    void Draw();
+    void Query(AABB area, std::vector<GameObject*>& foundObjects);
+
+private:
+    Quadtree** m_children;
+    AABB m_boundary;
+    GameObject** m_objects;
 };
 

@@ -1,16 +1,13 @@
 #pragma once
 
-
 #include "raylib.h"
+#include "GameObject.h"
 
-class Critter
+class Critter : public GameObject
 {
-protected:	
-	Vector2 m_position;
+protected:
 	Vector2 m_velocity;
 	float m_radius;
-
-	Texture2D m_texture;
 
 	bool m_isLoaded;
 	bool m_isDirty;		// indicates if we've already processed a collision response for this critter
@@ -19,18 +16,18 @@ public:
 	Critter();
 	~Critter();
 
-	void Init(Vector2 position, Vector2 velocity, float radius, Texture2D texture);
+	void Init(Vector2 position, Vector2 velocity, float radius, Texture2D* texture);
 	void Destroy();
 	void Update(float dt);
 	void Draw();
 
-	float GetX() { return m_position.x; }
-	float GetY() { return m_position.y; }
-	void SetX(float x) { m_position.x = x; }
-	void SetY(float y) { m_position.y = y; }
+	float GetX() { return m_bounds.m_centre.x; }
+	float GetY() { return m_bounds.m_centre.y; }
+	void SetX(float x) { m_bounds.m_centre.x = x; }
+	void SetY(float y) { m_bounds.m_centre.y = y; }
 
-	Vector2 GetPosition() { return m_position; }
-	void SetPosition(Vector2 position) { m_position = position; }
+	Vector2 GetPosition() { return m_bounds.m_centre; }
+	void SetPosition(Vector2 position) { m_bounds.m_centre = position; }
 
 	Vector2 GetVelocity() { return m_velocity; }
 	void SetVelocity(Vector2 velocity) { m_velocity = velocity; }

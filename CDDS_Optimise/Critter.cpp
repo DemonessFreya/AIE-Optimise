@@ -1,12 +1,12 @@
 #include "Critter.h"
 
 
-Critter::Critter()
+Critter::Critter() : GameObject(nullptr, Vector2{0,0})
 {
-	m_position = Vector2{ 0, 0 };
 	m_velocity = Vector2{ 0, 0 };
 	m_radius = 0;
 	m_isLoaded = false;
+	m_isDirty = false;
 }
 
 Critter::~Critter()
@@ -14,14 +14,14 @@ Critter::~Critter()
 	m_isLoaded = false;
 }
 
-void Critter::Init(Vector2 position, Vector2 velocity, float radius, Texture2D texture)
+void Critter::Init(Vector2 position, Vector2 velocity, float radius, Texture2D* texture)
 {
-	m_position = position;
+	m_texture = texture;
+	m_bounds.m_centre = position;
+	m_bounds.m_halfSize = Vector2{ radius, radius };
+
 	m_velocity = velocity;
 	m_radius = radius;
-	
-	m_texture = texture;
-
 	m_isLoaded = true;
 }
 
@@ -32,20 +32,19 @@ void Critter::Destroy()
 
 void Critter::Update(float dt)
 {
-	if (m_isLoaded == false)
-		return;
+	if (m_isLoaded == false) return;
 
-	m_position.x += m_velocity.x * dt;
-	m_position.y += m_velocity.y * dt;
+	m_bounds.m_centre.x += m_velocity.x * dt;
+	m_bounds.m_centre.y += m_velocity.y * dt;
 
 	m_isDirty = false;
 }
 
-
 void Critter::Draw()
 {
-	if (m_isLoaded == false)
-		return;
+	// if the critter is dead, don't draw it
+	if (!m_isLoaded) return;
 
-	DrawTexture(m_texture, m_position.x, m_position.y, WHITE);
+	// call base class GameObject draw logic
+	GameObject::Draw();
 }

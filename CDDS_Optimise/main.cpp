@@ -25,6 +25,8 @@
 #include <time.h>
 #include "Critter.h"
 #include "TextureManager.h"
+#include "GameObject.h"
+#include "Quad.h"
 
 int main(int argc, char* argv[])
 {
@@ -51,6 +53,9 @@ int main(int argc, char* argv[])
     const int CRITTER_COUNT = 50;
     const int MAX_VELOCITY = 80;
 
+    // define screen boundary for root node in quad tree
+    AABB screenBounds(Vector2{ (float)screenWidth / 2.0f, (float)screenHeight / 2.0f }, Vector2{ (float)screenWidth / 2.0f, (float)screenHeight / 2.0f });
+
     for (int i = 0; i < CRITTER_COUNT; i++)
     {
         // create a random direction vector for the velocity
@@ -59,14 +64,14 @@ int main(int argc, char* argv[])
         velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
 
         // create a critter in a random location
-        critters[i].Init({ (float)(5+rand() % (screenWidth-10)), (float)(5+(rand() % screenHeight-10)) }, velocity, 12, critterTex);
+        critters[i].Init({ (float)(5+rand() % (screenWidth-10)), (float)(5+(rand() % screenHeight-10)) }, velocity, 12, &critterTex);
     }
 
 
     Critter destroyer;
     Vector2 velocity = { -100 + (rand() % 200), -100 + (rand() % 200) };
     velocity = Vector2Scale(Vector2Normalize(velocity), MAX_VELOCITY);
-    destroyer.Init(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, destroyerTex);
+    destroyer.Init(Vector2{ (float)(screenWidth >> 1), (float)(screenHeight >> 1) }, velocity, 20, &destroyerTex);
 
     float timer = 1;
     Vector2 nextSpawnPos = destroyer.GetPosition();
@@ -74,11 +79,6 @@ int main(int argc, char* argv[])
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
-
         float delta = GetFrameTime();
 
         // update the destroyer
@@ -134,6 +134,14 @@ int main(int argc, char* argv[])
                 // this would be the perfect time to put the critter into an object pool
             }
         }
+
+        // instantiate new root node for current frame
+        Quadtree spatialTree(screenBounds);
+        for (int i = 0; i < CRITTER_COUNT; i++) {
+            if (!critters[i].IsDead()) {
+                spatialTree.Insert(&critters[i]);
+            }
+        }
                 
         // check for critter-on-critter collisions
         for (int i = 0; i < CRITTER_COUNT; i++)
@@ -181,7 +189,7 @@ int main(int argc, char* argv[])
                     Vector2 pos = destroyer.GetPosition();
                     pos = Vector2Add(pos, Vector2Scale(normal, -50));
                     // its pretty ineficient to keep reloading textures. ...if only there was something else we could do || yeah yeah i got it
-                    critters[i].Init(pos, Vector2Scale(normal, -MAX_VELOCITY), 12, critterTex);
+                    critters[i].Init(pos, Vector2Scale(normal, -MAX_VELOCITY), 12, &critterTex);
                     break;
                 }
             }
@@ -193,6 +201,8 @@ int main(int argc, char* argv[])
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
+
+        spatialTree.Draw();
 
         // draw the critters
         for (int i = 0; i < CRITTER_COUNT; i++)
