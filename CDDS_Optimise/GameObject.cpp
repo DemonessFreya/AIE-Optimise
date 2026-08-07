@@ -18,9 +18,13 @@ void GameObject::Update(float delta) {}
 
 void GameObject::Draw() {
 	if (m_texture != nullptr) {
+		// offset texture by half its width and height to centre the texture on its hitbox (m_bounds.m_centre)
+		float offsetX = (float)m_texture->width / 2.0f;
+		float offsetY = (float)m_texture->height / 2.0f;
+
 		DrawTexture(*m_texture,
-			m_bounds.m_centre.x - m_bounds.m_halfSize.x,
-			m_bounds.m_centre.y - m_bounds.m_halfSize.y,
+			(int)(m_bounds.m_centre.x - offsetX),
+			(int)(m_bounds.m_centre.y - offsetY),
 			WHITE);
 	}
 }

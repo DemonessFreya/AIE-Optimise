@@ -176,6 +176,7 @@
   <ItemGroup>
     <ClInclude Include="Critter.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="Quad.h" />
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
