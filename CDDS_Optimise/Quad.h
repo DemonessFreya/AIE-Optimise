@@ -61,6 +61,10 @@ public:
     void Draw();
     void Query(AABB area, std::vector<GameObject*>& foundObjects);
 
+    const AABB& GetBoundary() const { return m_boundary; }
+    Quadtree** GetChildren() const { return m_children; }
+    GameObject** GetObjects() const { return m_objects; }
+
 private:
     Quadtree** m_children;
     AABB m_boundary;
